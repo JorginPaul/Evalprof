@@ -12,6 +12,7 @@ import 'package:Evalprof/screen/evaluations/evaluation_generator_screen.dart';
 import 'package:Evalprof/screen/evaluations/evaluation_list_screen.dart';
 import 'package:Evalprof/screen/friends/friend_list_screen.dart';
 import 'package:Evalprof/screen/friends/friend_search_screen.dart';
+import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -47,7 +48,9 @@ class LecturerHubApp extends StatelessWidget {
         '/new-correction': (_) => const NewCorrectionScreen(),
         '/friends': (_) => const FriendListScreen(),
         '/friend-search': (_) => const FriendSearchScreen(),
+        '/profile': (_) => const ProfileScreen(),
       },
+      
       // onGenerateRoute for dynamic details
       onGenerateRoute: (settings) {
         if (settings.name == '/course-detail') {

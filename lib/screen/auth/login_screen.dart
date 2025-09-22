@@ -14,54 +14,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool loading = false;
   String email = '', password = '';
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password is required';
-    }
-    if (value.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!RegExp(r'[a-z]').hasMatch(value)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!RegExp(r'[0-9]').hasMatch(value)) {
-      return 'Password must contain at least one number';
-    }
-    if (!RegExp(r'[!@#  void _login() async {*~]').hasMatch(value)) {
-      return 'Password must contain at least one special character (!@#\  void _login() async {*~)';
-    }
-    return null;
-  }
-
-  Widget _buildPasswordRequirement(String requirement, bool isMet) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: Row(
-        children: [
-          Icon(
-            isMet ? Icons.check_circle : Icons.radio_button_unchecked,
-            size: 14,
-            color: isMet ? const Color(0xFF4CAF50) : const Color(0xFFBBBBBB),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              requirement,
-              style: TextStyle(
-                fontSize: 11,
-                color: isMet ? const Color(0xFF4CAF50) : const Color(0xFF666666),
-                fontWeight: isMet ? FontWeight.w500 : FontWeight.normal,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _login() async {
     if (!_form.currentState!.validate()) return;
     setState(() => loading = true);
@@ -219,41 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 vertical: 12,
                               ),
                             ),
-                            onChanged: (v) => password = v,
-                            validator: (v) => _validatePassword(v),
                           ),
-
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF0F0F0),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: const Color(0xFFE0E0E0),
-                                width: 1),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildPasswordRequirement(
-                                    'At least 8 characters', password.length >= 8),
-                                _buildPasswordRequirement(
-                                    'Contains uppercase letter',
-                                    RegExp(r'[A-Z]').hasMatch(password)),
-                                _buildPasswordRequirement(
-                                    'Contains lowercase letter',
-                                    RegExp(r'[a-z]').hasMatch(password)),
-                                _buildPasswordRequirement(
-                                    'Contains number',
-                                    RegExp(r'[0-9]').hasMatch(password)),
-                                _buildPasswordRequirement(
-                                    'Contains special character (!@#\$&*~)',
-                                    RegExp(r'[!@#\$&*~]').hasMatch(password)),
-                              ],
-                            ),
-                          ),
-
                         ],
                       ),
 
@@ -311,6 +229,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
 
                       const SizedBox(height: 40),
+
+                      // Copyright
+                      const Text(
+                        '© 2023 EvalProfs. All rights reserved.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF999999),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   ),
                 ),
