@@ -18,8 +18,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _nav(int i) {
     setState(() => idx = i);
     switch (i) {
-      case 0:
-        break;
       case 1:
         replace(context, '/course-list');
         break;
@@ -32,22 +30,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 4:
         replace(context, '/friends');
         break;
-      case 5:
-        replace(context, '/profile_screen');
-        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // 1.
     final screenWidth = MediaQuery.of(context).size.width;
     final maxContentWidth = (screenWidth > 800) ? 800.0 : screenWidth;
     final horizontalPadding = (screenWidth - maxContentWidth) / 2;
-    final contentPadding = EdgeInsets.symmetric(
-      horizontal: horizontalPadding + 16,
-      vertical: 16,
-    );
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -78,30 +68,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-
       body: SingleChildScrollView(
-        padding: contentPadding,
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding + 16,
+          vertical: 16,
+        ),
         child: Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxContentWidth),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              // Header Section - Welcome Banner
-              _buildWelcomeBanner(),
-              const SizedBox(height: 24),
-              
-              // Quick Actions Section
-              _buildQuickActionsSection(),
-              const SizedBox(height: 24),
-              
-              // Recent Activity Section
-              _buildRecentActivitySection(),
-              const SizedBox(height: 24),
-              
-              // Platform Usage Overview Section
-              _buildUsageOverviewSection(),
-              const SizedBox(height: 16),
+                _buildWelcomeBanner(maxContentWidth),
+                const SizedBox(height: 24),
+                _buildQuickActionsSection(maxContentWidth),
+                const SizedBox(height: 24),
+                _buildRecentActivitySection(maxContentWidth),
+                const SizedBox(height: 24),
+                _buildUsageOverviewSection(maxContentWidth),
               ],
             ),
           ),
@@ -111,14 +95,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildWelcomeBanner() {
+  // Welcome Banner
+  Widget _buildWelcomeBanner(double maxWidth) {
+    final bannerPadding = (maxWidth * 0.06).clamp(16.0, 32.0);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(bannerPadding),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 251, 242, 244),
+        color: primaryColor.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFFF4444)),
+        border: Border.all(color: primaryColor.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -126,18 +112,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
             'Welcome Back,\nLecturer!',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: (maxWidth * 0.04).clamp(20.0, 28.0),
               fontWeight: FontWeight.bold,
-              color: Color(0xFFFF4444),
+              color: primaryColor,
               height: 1.2,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Your personalized hub for academic\nexcellence and collaboration.',
+            'Your personalized hub for academic \n excellence and collaboration.',
             textAlign: TextAlign.center,
+            softWrap: true,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: (maxWidth * 0.022).clamp(12.0, 16.0),
               color: Colors.grey[600],
               height: 1.4,
             ),
@@ -147,56 +134,72 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildQuickActionsSection() {
+  // Quick Actions
+  Widget _buildQuickActionsSection(double maxWidth) {
+    final crossAxisCount = maxWidth > 600 ? 4 : 2;
+    final cardPadding = (maxWidth * 0.025).clamp(12.0, 20.0);
+
+    final actions = [
+      {
+        'icon': Icons.upload_file_outlined,
+        'title': 'Upload Course',
+        'subtitle': 'Share materials effortlessly',
+        'route': '/course-list',
+      },
+      {
+        'icon': Icons.auto_awesome_outlined,
+        'title': 'Generate Evaluation',
+        'subtitle': 'AI-powered assessments',
+        'route': '/evaluation-generator',
+      },
+      {
+        'icon': Icons.people_outline,
+        'title': 'Connect with Peers',
+        'subtitle': 'Expand academic network',
+        'route': '/friends',
+      },
+      {
+        'icon': Icons.edit_outlined,
+        'title': 'Review Corrections',
+        'subtitle': 'Refine shared content',
+        'route': '/corrections',
+      },
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Quick Actions',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: (maxWidth * 0.032).clamp(18.0, 20.0),
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 16),
-        GridView.count(
+        const SizedBox(height: 14),
+        GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 1.1,
-          children: [
-            _buildActionCard(
-              icon: Icons.upload_file_outlined,
-              iconColor: Color(0xFFFF4444),
-              title: 'Upload Course',
-              subtitle: 'Share your learning\nmaterials effortlessly',
-              onTap: () => push(context, '/course-list'),
-            ),
-            _buildActionCard(
-              icon: Icons.auto_awesome_outlined,
-              iconColor: Color(0xFFFF4444),
-              title: 'Generate Evaluation',
-              subtitle: 'Craft AI-powered\nassessments in\nminutes',
-              onTap: () => push(context, '/evaluation-generator'),
-            ),
-            _buildActionCard(
-              icon: Icons.people_outline,
-              iconColor: Color(0xFFFF4444),
-              title: 'Connect with Peers',
-              subtitle: 'Expand your\nacademic network',
-              onTap: () => push(context, '/friends'),
-            ),
-            _buildActionCard(
-              icon: Icons.edit_outlined,
-              iconColor: Color(0xFFFF4444),
-              title: 'Review Corrections',
-              subtitle: 'Provide feedback and\nrefine content',
-              onTap: () => push(context, '/corrections'),
-            ),
-          ],
+          itemCount: actions.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1,
+          ),
+          itemBuilder: (context, index) {
+            final action = actions[index];
+            return _buildActionCard(
+              icon: action['icon'] as IconData,
+              iconColor: primaryColor,
+              title: action['title'] as String,
+              subtitle: action['subtitle'] as String,
+              onTap: () => push(context, action['route'] as String),
+              padding: cardPadding,
+              maxWidth: maxWidth,
+            );
+          },
         ),
       ],
     );
@@ -208,6 +211,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    required double padding,
+    required double maxWidth,
   }) {
     return Card(
       elevation: 2,
@@ -216,33 +221,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(padding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                icon,
-                size: 32,
-                color: iconColor,
-              ),
+              Icon(icon,
+                  size: (maxWidth * 0.05).clamp(28.0, 32.0), color: iconColor),
               const SizedBox(height: 12),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 14,
+                style: TextStyle(
+                  fontSize: (maxWidth * 0.022).clamp(12.0, 14.0),
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
               ),
               const SizedBox(height: 4),
-              Expanded(
+              Flexible(
                 child: Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: (maxWidth * 0.018).clamp(10.0, 13.0),
                     color: Colors.grey[600],
                     height: 1.3,
                   ),
+                  softWrap: true,
                 ),
               ),
             ],
@@ -252,38 +255,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildRecentActivitySection() {
+  // Recent Activity
+  Widget _buildRecentActivitySection(double maxWidth) {
+    final titleFontSize  = (maxWidth * 0.032).clamp(18.0, 22.0);
+    final itemPadding = (maxWidth * 0.025).clamp(12.0, 20.0);
+    final iconSize = (maxWidth * 0.032).clamp(18.0, 24.0);
+    final titleSize = (maxWidth * 0.022).clamp(12.0, 16.0);
+    final subtitleSize = (maxWidth * 0.018).clamp(11.0, 14.0);
+    final timeSize = (maxWidth * 0.016).clamp(10.0, 12.0);
+    final buttonSize = (maxWidth * 0.018).clamp(11.0, 13.0);
+
     final activities = [
       {
         'icon': Icons.description_outlined,
         'title': 'Course Uploaded',
         'subtitle': 'Advanced Calculus II Notes',
         'time': '2 days ago',
-        'color': Color(0xFFFF4444),
+        'color': primaryColor,
       },
       {
         'icon': Icons.edit_outlined,
         'title': 'Correction Suggested',
         'subtitle': 'Introduction to Philosophy Quiz',
         'time': '1 day ago',
-        'color': Color(0xFFFF4444),
+        'color': primaryColor,
       },
       {
         'icon': Icons.person_add_outlined,
         'title': 'New Friend',
         'subtitle': 'Dr. Sarah Chen connected with you',
         'time': '3 hours ago',
-        'color': Color(0xFFFF4444),
+        'color': primaryColor,
       },
     ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Recent Activity',
           style: TextStyle(
-            fontSize: 20,
+            fontSize: titleFontSize,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
@@ -299,6 +311,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 .map((entry) => _buildActivityItem(
                       entry.value,
                       isLast: entry.key == activities.length - 1,
+                      padding: itemPadding,
+                      iconSize: iconSize,
+                      titleSize: titleSize,
+                      subtitleSize: subtitleSize,
+                      timeSize: timeSize,
+                      buttonSize: buttonSize,
                     ))
                 .toList(),
           ),
@@ -307,10 +325,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildActivityItem(Map<String, dynamic> activity, {bool isLast = false}) {
+   Widget _buildActivityItem(
+    Map<String, dynamic> activity, {
+    bool isLast = false,
+    required double padding,
+    required double iconSize,
+    required double titleSize,
+    required double subtitleSize,
+    required double timeSize,
+    required double buttonSize,
+    }) {
     return InkWell(
-      onTap: () {}, // Handle view action
+      onTap: () {
+        if (activity['title'] == 'Course Uploaded') {
+          push(context, '/course-list');
+        } else if (activity['title'] == 'Correction Suggested') {
+          push(context, '/corrections');
+        } else if (activity['title'] == 'New Friend') {
+          push(context, '/friends');
+        }
+      }, // Handle view action
       child: Container(
+        constraints: const BoxConstraints(minHeight: 80, maxHeight: 120),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: isLast ? null : Border(
@@ -320,8 +356,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: (padding * 2.5).clamp(32.0, 48.0),
+              height: (padding * 2.5).clamp(32.0, 48.0),
               decoration: BoxDecoration(
                 color: (activity['color'] as Color).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
@@ -329,35 +365,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Icon(
                 activity['icon'] as IconData,
                 color: activity['color'] as Color,
-                size: 20,
+                size: iconSize,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: padding * 0.80),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     activity['title'] as String,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: TextStyle(
+                      fontSize: titleSize,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: padding * 0.10),
                   Text(
                     activity['subtitle'] as String,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: subtitleSize,
                       color: Colors.grey[600],
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   Text(
                     activity['time'] as String,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: timeSize,
                       color: Colors.grey[500],
                     ),
                   ),
@@ -366,17 +405,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
 
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: padding * 0.75, vertical: padding * 0.375),
               decoration: BoxDecoration(
-                border: Border.all(color: Color(0xFFFF4444)),
+                border: Border.all(color: primaryColor),
                 borderRadius: BorderRadius.circular(16),
               ),
               
-              child: const Text(
+              child: Text(
                 'View',
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFFFF4444),
+                  fontSize: buttonSize,
+                  color: primaryColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -387,154 +426,133 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildUsageOverviewSection() {
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Platform Usage Overview',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+
+  // Platform Usage Overview
+  Widget _buildUsageOverviewSection(double maxWidth) {
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
+  ];
+
+  return Card(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    child: Padding(
+      padding: EdgeInsets.all((maxWidth * 0.025).clamp(12.0, 20.0)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Platform Usage Overview',
+            style: TextStyle(
+              fontSize: (maxWidth * 0.032).clamp(18.0, 22.0),
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Monthly Activity Trends',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: false),
-                  titlesData: FlTitlesData(
-                    leftTitles: const AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        interval: 60,
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-                          if (value.toInt() >= 0 && value.toInt() < months.length) {
-                            return Text(
-                              months[value.toInt()],
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            );
-                          }
-                          return const Text('');
-                        },
-                        reservedSize: 30,
-                      ),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: (maxWidth * 0.35).clamp(180.0, 250.0),
+            child: LineChart(
+              LineChartData(
+                gridData: const FlGridData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: const AxisTitles(   // remove y-axis labels
+                    sideTitles: SideTitles(showTitles: true, reservedSize: 40, interval: 60),
+                  ),
+                  rightTitles: const AxisTitles(  // remove right labels
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(    // remove top labels
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1, // spacing for each tick
+                      getTitlesWidget: (value, meta) {
+                        if (value.toInt() >= 0 && value.toInt() < months.length) {
+                          return Text(
+                            months[value.toInt()],
+                            style: const TextStyle(color: Colors.grey, fontSize: 11),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
                     ),
                   ),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    // Evaluations Generated line
-                    LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 120),
-                        FlSpot(1, 140),
-                        FlSpot(2, 135),
-                        FlSpot(3, 160),
-                        FlSpot(4, 180),
-                        FlSpot(5, 200),
-                      ],
-                      isCurved: true,
-                      color: Color(0xFFFF4444),
-                      barWidth: 3,
-                      dotData: const FlDotData(show: false),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        color: Color(0xFFFF4444).withOpacity(0.2),
-                      ),
-                    ),
-                    
-                    // Courses Uploaded line
-                    LineChartBarData(
-                      spots: const [
-                        FlSpot(0, 80),
-                        FlSpot(1, 90),
-                        FlSpot(2, 85),
-                        FlSpot(3, 100),
-                        FlSpot(4, 120),
-                        FlSpot(5, 140),
-                      ],
-                      isCurved: true,
-                      color: Colors.blue,
-                      barWidth: 3,
-                      dotData: const FlDotData(show: false),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        color: Colors.blue.withOpacity(0.1),
-                      ),
-                    ),
-                  ],
-                  minY: 0,
-                  maxY: 240,
                 ),
+                
+                borderData: FlBorderData(show: true, border: Border.all(color: Colors.grey[500]!)),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: const [
+                      FlSpot(1, 140),
+                      FlSpot(2, 135),
+                      FlSpot(3, 160),
+                      FlSpot(4, 180),
+                      FlSpot(5, 200),
+                      FlSpot(6, 190),
+                      FlSpot(7, 210),
+                      FlSpot(8, 230),
+                      FlSpot(9, 240),
+                      FlSpot(10, 250),
+                      FlSpot(11, 260),
+                    ],
+                    isCurved: true,
+                    color: primaryColor,
+                    barWidth: 3,
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: primaryColor.withOpacity(0.2),
+                    ),
+                  ),
+                  LineChartBarData(
+                    spots: const [
+                      FlSpot(1, 90),
+                      FlSpot(2, 85),
+                      FlSpot(3, 100),
+                      FlSpot(4, 120),
+                      FlSpot(5, 140),
+                      FlSpot(6, 135),
+                      FlSpot(7, 150),
+                      FlSpot(8, 170),
+                      FlSpot(9, 180),
+                      FlSpot(10, 200),
+                      FlSpot(11, 220),
+                    ],
+                    isCurved: true,
+                    color: Colors.blue,
+                    barWidth: 3,
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: Colors.blue.withOpacity(0.1),
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildLegendItem(Color(0xFFFF4444), 'Evaluations Generated'),
-                const SizedBox(width: 20),
-                _buildLegendItem(Colors.blue, 'Courses Uploaded'),
-              ],
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLegendItem(primaryColor, 'Evaluations Generated'),
+              const SizedBox(width: 16),
+              _buildLegendItem(Colors.blue, 'Courses Uploaded'),
+            ],
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLegendItem(Color color, String label) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
+        Container(width: 12, height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-          ),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
       ],
     );
   }

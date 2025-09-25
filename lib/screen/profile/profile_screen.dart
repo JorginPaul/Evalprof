@@ -1,16 +1,17 @@
+import 'package:Evalprof/screen/auth/login_screen.dart';
+import 'package:Evalprof/screen/profile/edit_profile.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     // Example user data
-    final String userName = "John Doe";
-    final String userEmail = "john.doe@email.com";
+    final String userName = "Paul Jorgin";
+    final String userEmail = "blessing2025@gmail.com";
     final String userRole = "Evaluator";
-    final String profileImage =
-        "https://ui-avatars.com/api/?name=John+Doe&background=0D8ABC&color=fff";
+    final String profileImage = "../ChatGPT_Image.png";
 
     return Scaffold(
       appBar: AppBar(
@@ -19,7 +20,10 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              // Navigate to edit profile screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditProfile())
+              );
             },
           ),
         ],
@@ -62,10 +66,13 @@ class ProfileScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
+              leading: Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+              title: Text('Logout', style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onTap: () {
-                // Implement logout
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen())
+                );
               },
             ),
             const Divider(height: 32),

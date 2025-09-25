@@ -2,11 +2,12 @@
 import 'package:Evalprof/screen/auth/dashboard_screen.dart';
 import 'package:Evalprof/screen/auth/login_screen.dart';
 import 'package:Evalprof/screen/auth/register_screen.dart';
+import 'package:Evalprof/screen/auth/splash_page.dart';
 import 'package:Evalprof/screen/corrections/correction_detail_screen.dart';
 import 'package:Evalprof/screen/corrections/correction_list_screen.dart';
-import 'package:Evalprof/screen/corrections/new_correction-screen.dart';
+import 'package:Evalprof/screen/corrections/new_correction_screen.dart';
 import 'package:Evalprof/screen/courses/course_detail_screen.dart';
-import 'package:Evalprof/screen/courses/course_list_screen.dart';
+import 'package:Evalprof/screen/courses/course_library_screen.dart';
 import 'package:Evalprof/screen/courses/course_upload_screen.dart';
 import 'package:Evalprof/screen/evaluations/evaluation_generator_screen.dart';
 import 'package:Evalprof/screen/evaluations/evaluation_list_screen.dart';
@@ -28,7 +29,7 @@ class LecturerHubApp extends StatelessWidget {
       title: 'Lecturer Hub',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: Colors.red,
         scaffoldBackgroundColor: Colors.grey.shade50,
         appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
         inputDecorationTheme: const InputDecorationTheme(
@@ -37,10 +38,11 @@ class LecturerHubApp extends StatelessWidget {
       ),
       initialRoute: '/login',
       routes: {
+        '/splashpage': (_) => SplashPage(),
         '/login': (_) => LoginScreen(),
         '/register': (_) => RegisterScreen(),
         '/dashboard': (_) => const DashboardScreen(),
-        '/course-list': (_) => const CourseListScreen(),
+        '/course-list': (_) => const CourseLibraryScreen(),
         '/upload-course': (_) => const CourseUploadScreen(),
         '/evaluation-generator': (_) => EvaluationGeneratorScreen(),
         '/evaluation-list': (_) => const EvaluationListScreen(),
