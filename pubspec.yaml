@@ -36,6 +36,10 @@ dependencies:
   open_file: ^3.3.2
   pdf: ^3.10.4
   share_plus: ^7.2.1
+  provider: ^6.0.5
+  flutter_secure_storage: ^8.0.0
+  file_picker: ^5.3.2
+  http: ^1.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -51,6 +55,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+
+#dependency_overrides: 
+# file_picker_platfomrm_interface: ^5.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

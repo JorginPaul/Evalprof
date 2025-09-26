@@ -1,9 +1,14 @@
 import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
-class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({super.key});
+class PendingReviews extends StatefulWidget {
+  const PendingReviews({super.key});
 
+  @override
+  State<PendingReviews> createState() => _PendingReviewsState();
+}
+
+class _PendingReviewsState extends State<PendingReviews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +17,7 @@ class NotificationScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Notifications',
+          'Pending Reviews',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 18,

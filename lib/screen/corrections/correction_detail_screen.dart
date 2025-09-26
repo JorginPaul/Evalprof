@@ -1,3 +1,4 @@
+import 'package:Evalprof/screen/notifications/notification_screen.dart';
 import 'package:flutter/material.dart';
 
 class CorrectionDetailScreen extends StatelessWidget {
@@ -13,7 +14,30 @@ class CorrectionDetailScreen extends StatelessWidget {
     };
 
     return Scaffold(
-      appBar: AppBar(title: Text('Correction ${correction['id']}')),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Correction Details',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Color(0xFFFF4444)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

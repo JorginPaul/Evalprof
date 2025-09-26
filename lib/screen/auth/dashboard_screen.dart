@@ -144,7 +144,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'icon': Icons.upload_file_outlined,
         'title': 'Upload Course',
         'subtitle': 'Share materials effortlessly',
-        'route': '/course-list',
+        'route': '/upload-course',
       },
       {
         'icon': Icons.auto_awesome_outlined,

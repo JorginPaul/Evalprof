@@ -1,8 +1,7 @@
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
-import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navbar.dart';
 import '../../utils/helpers.dart';
+import 'course_detail_screen.dart';
 
 class CourseLibraryScreen extends StatefulWidget {
   const CourseLibraryScreen({super.key});
@@ -12,20 +11,17 @@ class CourseLibraryScreen extends StatefulWidget {
 }
 
 class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
-  String selectedFilter = 'Physics';
+  static const Color primaryColor = Color(0xFFFF4444);
+  String selectedFilter = 'All';
   final TextEditingController _searchController = TextEditingController();
-
-  final List<String> filters = [
-    'Physics',
-    'Chemistry',
-    'Computer Science',
-    'Mathematics',
-    'Biology',
-    'Art History',
-    'Economics',
-    'All'
-  ];
-
+  bool isSearching = false;
+  
+  List<String> get filters {
+    final subjects = courses.map((course) => course['subject'] as String).toSet().toList();
+    subjects.sort();
+    return ['All', ...subjects];
+  }
+  
   final List<Map<String, dynamic>> courses = [
     {
       'id': '1',
@@ -36,6 +32,12 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
       'rating': 4.8,
       'color': const Color(0xFF2196F3),
       'verified': true,
+      'level': '100',
+      'description': 'Comprehensive introduction to fundamental physics concepts including mechanics, thermodynamics, and wave motion. This course provides a solid foundation for advanced physics studies.',
+      'duration': '12 weeks',
+      'credits': '3',
+      'tags': 'Physics, Mechanics, Thermodynamics',
+      'uploadDate': '1 week ago',
     },
     {
       'id': '2',
@@ -46,6 +48,12 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
       'rating': 4.5,
       'color': const Color(0xFFFF5722),
       'verified': true,
+      'level': '300',
+      'description': 'In-depth exploration of organic and inorganic chemistry principles, reaction mechanisms, and laboratory techniques for advanced undergraduate students.',
+      'duration': '16 weeks',
+      'credits': '4',
+      'tags': 'Chemistry, Organic, Inorganic',
+      'uploadDate': '3 days ago',
     },
     {
       'id': '3',
@@ -56,6 +64,12 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
       'rating': 4.9,
       'color': const Color(0xFF4CAF50),
       'verified': true,
+      'level': '200',
+      'description': 'Introduction to machine learning algorithms, data preprocessing, model evaluation, and practical implementation using Python and popular ML libraries.',
+      'duration': '14 weeks',
+      'credits': '3',
+      'tags': 'Computer Science, AI, Python',
+      'uploadDate': '2 days ago',
     },
     {
       'id': '4',
@@ -64,218 +78,293 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
       'instructor': 'Dr. Michael Brown',
       'downloads': 75,
       'rating': 4.2,
-      'color': const Color(0xFF2196F3),
+      'color': const Color(0xFF9C27B0),
       'verified': true,
+      'level': '200',
+      'description': 'Comprehensive study of Renaissance art movements, key artists, and cultural contexts from the 14th to 16th centuries in Europe.',
+      'duration': '12 weeks',
+      'credits': '3',
+      'tags': 'Art History, Renaissance, Culture',
+      'uploadDate': '5 days ago',
     },
     {
       'id': '5',
-      'title': 'Micro-Economics Principles',
+      'title': 'Microeconomics Principles',
       'subject': 'Economics',
       'instructor': 'Prof. Jessica Williams',
       'downloads': 150,
       'rating': 4.7,
-      'color': const Color(0xFF2196F3),
+      'color': const Color(0xFF607D8B),
       'verified': true,
+      'level': '100',
+      'description': 'Fundamental principles of microeconomic theory including supply and demand, market structures, consumer behavior, and firm decision-making.',
+      'duration': '14 weeks',
+      'credits': '3',
+      'tags': 'Economics, Markets, Theory',
+      'uploadDate': '1 day ago',
     },
   ];
 
   List<Map<String, dynamic>> get filteredCourses {
     return courses.where((course) {
-      final matchesFilter =
-          selectedFilter == 'All' || course['subject'] == selectedFilter;
-      final matchesSearch = _searchController.text.isEmpty ||
-          course['title']
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase()) ||
-          course['instructor']
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase());
+      final matchesFilter = selectedFilter == 'All' || course['subject'] == selectedFilter;
+      final searchQuery = _searchController.text.toLowerCase().trim();
+      final matchesSearch = searchQuery.isEmpty || 
+          course['title'].toLowerCase().contains(searchQuery) ||
+          course['instructor'].toLowerCase().contains(searchQuery) ||
+          course['subject'].toLowerCase().contains(searchQuery);
       return matchesFilter && matchesSearch;
     }).toList();
   }
-  
+
+  void _clearSearch() {
+    setState(() {
+      _searchController.clear();
+      isSearching = false;
+    });
+  }
+
+  void _navigateToCourseDetail(Map<String, dynamic> course) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CourseDetailScreen(courseData: course),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isTablet = screenWidth > 600;
+    final maxContentWidth = (screenWidth > 800) ? 800.0 : screenWidth;
+    final horizontalPadding = (screenWidth - maxContentWidth) / 2;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Course Library',
           style: TextStyle(
             color: Colors.black,
-            fontSize: 18,
+            fontSize: (maxContentWidth * 0.032).clamp(16.0, 20.0),
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Color(0xFFFF4444)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationScreen()),
-              );
-            },
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
+            onPressed: () {},
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: CircleAvatar(
+              radius: 16,
+              backgroundColor: Colors.grey[200],
+              child: const Icon(Icons.person, size: 20, color: Colors.grey),
+            ),
           ),
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Search Bar
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(16),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search for courses...',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
+        child: Column(
+          children: [
+            // Search Bar Section
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding + 16,
+                vertical: 16,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxContentWidth),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search for courses...',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                      suffixIcon: _searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey[600]),
+                              onPressed: _clearSearch,
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                    onChanged: (value) {
+                      setState(() {
+                        isSearching = value.isNotEmpty;
+                      });
+                    },
                   ),
-                  onChanged: (value) => setState(() {}),
                 ),
               ),
-
-              // Filters Section
-              Container(
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+            
+            // Filters Section
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.fromLTRB(horizontalPadding + 16, 0, horizontalPadding + 16, 16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxContentWidth),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Filters',
+                            style: TextStyle(
+                              fontSize: (maxContentWidth * 0.025).clamp(14.0, 18.0),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Icon(
+                            Icons.tune,
+                            color: primaryColor,
+                            size: (maxContentWidth * 0.03).clamp(18.0, 22.0),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 40,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: filters.length,
+                          itemBuilder: (context, index) {
+                            final filter = filters[index];
+                            final isSelected = selectedFilter == filter;
+                            return Padding(
+                              padding: EdgeInsets.only(right: index < filters.length - 1 ? 8.0 : 0.0),
+                              child: GestureDetector(
+                                onTap: () => setState(() => selectedFilter = filter),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? primaryColor : Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (isSelected) ...[
+                                        Icon(
+                                          filter == 'All' ? Icons.apps : Icons.book,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        const SizedBox(width: 4),
+                                      ],
+                                      Text(
+                                        filter,
+                                        style: TextStyle(
+                                          color: isSelected ? Colors.white : Colors.grey[700],
+                                          fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                                          fontSize: (maxContentWidth * 0.022).clamp(12.0, 14.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+            // Course List Section
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: horizontalPadding + 16,
+                  vertical: 16,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: maxContentWidth),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Filters',
+                        Text(
+                          filteredCourses.isEmpty && (_searchController.text.isNotEmpty || selectedFilter != 'All')
+                              ? _searchController.text.isNotEmpty
+                                  ? 'No courses found for "${_searchController.text}"'
+                                  : 'No courses found in $selectedFilter'
+                              : 'Available Courses',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: (maxContentWidth * 0.025).clamp(14.0, 18.0),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Icon(
-                          Icons.tune,
-                          color: Color(0xFFFF4444),
-                          size: 20,
+                        if (_searchController.text.isNotEmpty || selectedFilter != 'All') ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            filteredCourses.isEmpty
+                                ? 'Try adjusting your search or filter criteria'
+                                : '${filteredCourses.length} course${filteredCourses.length == 1 ? '' : 's'} found',
+                            style: TextStyle(
+                              fontSize: (maxContentWidth * 0.02).clamp(10.0, 14.0),
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: filteredCourses.isEmpty
+                              ? _buildEmptyState(maxContentWidth)
+                              : ListView.builder(
+                                  itemCount: filteredCourses.length,
+                                  itemBuilder: (context, index) {
+                                    final course = filteredCourses[index];
+                                    return Padding(
+                                      padding: EdgeInsets.only(bottom: index < filteredCourses.length - 1 ? 12.0 : 0.0),
+                                      child: CourseCard(
+                                        course: course,
+                                        onTap: () => _navigateToCourseDetail(course),
+                                        onDownload: () => _downloadCourse(course),
+                                        searchQuery: _searchController.text.toLowerCase().trim(),
+                                        maxWidth: maxContentWidth,
+                                      ),
+                                    );
+                                  },
+                                ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 40,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: filters.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(width: 8),
-                        itemBuilder: (context, index) {
-                          final filter = filters[index];
-                          final isSelected = selectedFilter == filter;
-                          return GestureDetector(
-                            onTap: () =>
-                                setState(() => selectedFilter = filter),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? const Color(0xFFFF4444)
-                                    : Colors.grey[100],
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (isSelected) ...[
-                                    const Icon(Icons.book,
-                                        size: 16, color: Colors.white),
-                                    const SizedBox(width: 4),
-                                  ],
-                                  Text(
-                                    filter,
-                                    style: TextStyle(
-                                      color: isSelected
-                                          ? Colors.white
-                                          : Colors.grey[700],
-                                      fontWeight: isSelected
-                                          ? FontWeight.w500
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-
-              // Available Courses Section
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Available Courses',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Responsive Grid/List
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final crossAxisCount = isTablet ? 2 : 1;
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            childAspectRatio: isTablet ? 3.5 : 2.8,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                          ),
-                          itemCount: filteredCourses.length,
-                          itemBuilder: (context, index) {
-                            final course = filteredCourses[index];
-                            return CourseCard(
-                              course: course,
-                              onDownload: () => _downloadCourse(course),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => push(context, '/upload-course'),
+        backgroundColor: primaryColor,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       bottomNavigationBar: BottomNavbar(
         currentIndex: 1,
@@ -301,6 +390,40 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
     );
   }
 
+  Widget _buildEmptyState(double maxWidth) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.search_off,
+            size: (maxWidth * 0.1).clamp(48.0, 72.0),
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: (maxWidth * 0.03).clamp(12.0, 20.0)),
+          Text(
+            _searchController.text.isNotEmpty
+                ? 'No courses match your search'
+                : 'No courses in this category',
+            style: TextStyle(
+              fontSize: (maxWidth * 0.025).clamp(14.0, 18.0),
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: (maxWidth * 0.015).clamp(6.0, 12.0)),
+          Text(
+            'Try a different search term or category',
+            style: TextStyle(
+              fontSize: (maxWidth * 0.022).clamp(12.0, 16.0),
+              color: Colors.grey[500],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _downloadCourse(Map<String, dynamic> course) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -314,23 +437,94 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
 
 class CourseCard extends StatelessWidget {
   final Map<String, dynamic> course;
+  final VoidCallback onTap;
   final VoidCallback onDownload;
+  final String searchQuery;
+  final double maxWidth;
 
   const CourseCard({
     super.key,
     required this.course,
+    required this.onTap,
     required this.onDownload,
+    this.searchQuery = '',
+    required this.maxWidth,
   });
+
+  static const Color primaryColor = Color(0xFFFF4444);
+
+  Widget _highlightSearchText(String text, String query) {
+    if (query.isEmpty) {
+      return Text(
+        text,
+        style: TextStyle(
+          fontSize: text == course['title'] 
+              ? (maxWidth * 0.025).clamp(14.0, 18.0)
+              : text == course['subject'] 
+                  ? (maxWidth * 0.022).clamp(12.0, 16.0)
+                  : (maxWidth * 0.02).clamp(10.0, 14.0),
+          fontWeight: text == course['title'] ? FontWeight.w600 : FontWeight.normal,
+          color: text == course['title'] ? Colors.black : Colors.grey[600],
+        ),
+      );
+    }
+    
+    final lowerText = text.toLowerCase();
+    final lowerQuery = query.toLowerCase();
+    
+    if (!lowerText.contains(lowerQuery)) {
+      return Text(
+        text,
+        style: TextStyle(
+          fontSize: text == course['title'] 
+              ? (maxWidth * 0.025).clamp(14.0, 18.0)
+              : text == course['subject'] 
+                  ? (maxWidth * 0.022).clamp(12.0, 16.0)
+                  : (maxWidth * 0.02).clamp(10.0, 14.0),
+          fontWeight: text == course['title'] ? FontWeight.w600 : FontWeight.normal,
+          color: text == course['title'] ? Colors.black : Colors.grey[600],
+        ),
+      );
+    }
+    
+    final startIndex = lowerText.indexOf(lowerQuery);
+    final endIndex = startIndex + query.length;
+    
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          fontSize: text == course['title'] 
+              ? (maxWidth * 0.025).clamp(14.0, 18.0)
+              : text == course['subject'] 
+                  ? (maxWidth * 0.022).clamp(12.0, 16.0)
+                  : (maxWidth * 0.02).clamp(10.0, 14.0),
+          fontWeight: text == course['title'] ? FontWeight.w600 : FontWeight.normal,
+          color: text == course['title'] ? Colors.black : Colors.grey[600],
+        ),
+        children: [
+          if (startIndex > 0)
+            TextSpan(text: text.substring(0, startIndex)),
+          TextSpan(
+            text: text.substring(startIndex, endIndex),
+            style: TextStyle(
+              backgroundColor: Colors.yellow[300],
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          if (endIndex < text.length)
+            TextSpan(text: text.substring(endIndex)),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        // Navigate to course detail page
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Opening ${course['title']}...')),
-        );
-      },
+    final cardPadding = (maxWidth * 0.025).clamp(12.0, 20.0);
+    final iconSize = (maxWidth * 0.08).clamp(40.0, 60.0);
+    
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -343,137 +537,141 @@ class CourseCard extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Course Icon
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: course['color'].withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: EdgeInsets.all(cardPadding),
+          child: Row(
+            children: [
+              // Course Icon
+              Container(
+                width: iconSize,
+                height: iconSize,
+                decoration: BoxDecoration(
+                  color: (course['color'] as Color).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  _getSubjectIcon(course['subject']),
+                  color: course['color'] as Color,
+                  size: iconSize * 0.5,
+                ),
               ),
-              child: Icon(
-                _getSubjectIcon(course['subject']),
-                color: course['color'],
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-
-            // Course Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    course['title'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+              SizedBox(width: cardPadding),
+              
+              // Course Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _highlightSearchText(
+                      course['title'],
+                      searchQuery,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    course['subject'],
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
+                    SizedBox(height: cardPadding * 0.25),
+                    _highlightSearchText(
+                      course['subject'],
+                      searchQuery,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.blue[50],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'VERIFIED',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.blue[700],
-                            fontWeight: FontWeight.w500,
+                    SizedBox(height: cardPadding * 0.5),
+                    Row(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: (maxWidth * 0.015).clamp(6.0, 10.0),
+                            vertical: (maxWidth * 0.005).clamp(2.0, 4.0),
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'VERIFIED',
+                            style: TextStyle(
+                              fontSize: (maxWidth * 0.018).clamp(8.0, 12.0),
+                              color: Colors.blue[700],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          course['instructor'],
+                        SizedBox(width: (maxWidth * 0.015).clamp(6.0, 10.0)),
+                        Expanded(
+                          child: _highlightSearchText(
+                            course['instructor'],
+                            searchQuery,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: cardPadding * 0.5),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.download_outlined, 
+                          size: (maxWidth * 0.022).clamp(12.0, 16.0), 
+                          color: Colors.grey[500],
+                        ),
+                        SizedBox(width: (maxWidth * 0.01).clamp(4.0, 6.0)),
+                        Text(
+                          '${course['downloads']}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: (maxWidth * 0.02).clamp(10.0, 14.0),
                             color: Colors.grey[600],
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.download_outlined,
-                          size: 14, color: Colors.grey[500]),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${course['downloads']}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                        SizedBox(width: cardPadding),
+                        Icon(
+                          Icons.star, 
+                          size: (maxWidth * 0.022).clamp(12.0, 16.0), 
+                          color: Colors.amber[600],
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Icon(Icons.star,
-                          size: 14, color: Colors.amber[600]),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${course['rating']}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                        SizedBox(width: (maxWidth * 0.01).clamp(4.0, 6.0)),
+                        Text(
+                          '${course['rating']}',
+                          style: TextStyle(
+                            fontSize: (maxWidth * 0.02).clamp(10.0, 14.0),
+                            color: Colors.grey[600],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Download Button
-            ElevatedButton(
-              onPressed: onDownload,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF4444),
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: 0,
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.download, size: 16),
-                  SizedBox(width: 4),
-                  Text(
-                    'Download',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              
+              // Download Button
+              GestureDetector(
+                onTap: () => onDownload(),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: (maxWidth * 0.025).clamp(12.0, 18.0),
+                    vertical: (maxWidth * 0.015).clamp(6.0, 10.0),
+                  ),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.download, 
+                        size: (maxWidth * 0.025).clamp(14.0, 18.0), 
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: (maxWidth * 0.01).clamp(4.0, 6.0)),
+                      Text(
+                        'Download',
+                        style: TextStyle(
+                          fontSize: (maxWidth * 0.02).clamp(10.0, 14.0),
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -4,8 +4,10 @@ import 'package:Evalprof/screen/auth/login_screen.dart';
 import 'package:Evalprof/screen/auth/register_screen.dart';
 import 'package:Evalprof/screen/auth/splash_page.dart';
 import 'package:Evalprof/screen/corrections/correction_detail_screen.dart';
-import 'package:Evalprof/screen/corrections/correction_list_screen.dart';
+import 'package:Evalprof/screen/corrections/correction_panel.dart';
 import 'package:Evalprof/screen/corrections/new_correction_screen.dart';
+import 'package:Evalprof/screen/corrections/pending_reviews.dart';
+import 'package:Evalprof/screen/corrections/total_comments.dart';
 import 'package:Evalprof/screen/courses/course_detail_screen.dart';
 import 'package:Evalprof/screen/courses/course_library_screen.dart';
 import 'package:Evalprof/screen/courses/course_upload_screen.dart';
@@ -13,6 +15,7 @@ import 'package:Evalprof/screen/evaluations/evaluation_generator_screen.dart';
 import 'package:Evalprof/screen/evaluations/evaluation_list_screen.dart';
 import 'package:Evalprof/screen/friends/friend_list_screen.dart';
 import 'package:Evalprof/screen/friends/friend_search_screen.dart';
+import 'package:Evalprof/screen/notifications/notification_screen.dart';
 import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +29,7 @@ class LecturerHubApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Lecturer Hub',
+      title: 'EvalProf. Lecturer Hub',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.red,
@@ -48,9 +51,12 @@ class LecturerHubApp extends StatelessWidget {
         '/evaluation-list': (_) => const EvaluationListScreen(),
         '/corrections': (_) => const CorrectionListScreen(),
         '/new-correction': (_) => const NewCorrectionScreen(),
-        '/friends': (_) => const FriendListScreen(),
+        '/friends': (_) => const FriendsScreen(),
         '/friend-search': (_) => const FriendSearchScreen(),
         '/profile': (_) => const ProfileScreen(),
+        '/notification': (_) => const NotificationScreen(),
+        '/pending-reviews': (_) => const PendingReviews(),
+        '/total-comments': (_) => const TotalComments(),
       },
       
       // onGenerateRoute for dynamic details
