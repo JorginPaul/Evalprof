@@ -1,5 +1,11 @@
 import 'package:Evalprof/screen/auth/dashboard_screen.dart';
+import 'package:Evalprof/screen/corrections/pending_reviews.dart';
+import 'package:Evalprof/screen/corrections/total_comments.dart';
 import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:Evalprof/screen/corrections/pending_reviews.dart';
+import 'package:Evalprof/screen/corrections/total_comments.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/bottom_navbar.dart';
@@ -13,6 +19,21 @@ class CorrectionListScreen extends StatefulWidget {
 
 class _CorrectionListScreenState extends State<CorrectionListScreen> {
   static const Color primaryColor = Color(0xFFFF4444);
+
+  // File picker
+  String? filePath;
+  Future<void> _pickFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xlt', 'mp3', 'mp4'],
+    );
+    if (result != null) {
+      setState(() {
+        filePath = result.files.single.name;
+      });
+    }
+  }
+  
   int idx = 3; // Corrections tab
 
   void _nav(int i) {
@@ -82,16 +103,6 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios,
-              color: Color(0xFFFF4444), size: 20),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DashboardScreen()),
-            );
-          },
-        ),
         title: const Text(
           'Correction Panel',
           style: TextStyle(
@@ -102,15 +113,29 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined,
-                color: Color(0xFFFF4444)),
+            icon: const Icon(Icons.notifications_outlined, color: Color(0xFFFF4444)),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationScreen()),
+                MaterialPageRoute(builder: (context) => const NotificationScreen())
               );
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen())
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[300],
+                child: const Icon(Icons.person, size: 20, color: Colors.white),
+              ),
+            ),
           ),
         ],
       ),
@@ -119,7 +144,7 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Quick Stats Section
+            // Quick Stats Section with Navigation
             Container(
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(20),
@@ -149,20 +174,42 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.schedule,
-                          count: '12',
-                          label: 'Pending\nReviews',
-                          iconColor: const Color(0xFFFF4444),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PendingReviewsScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: _buildStatCard(
+                            icon: Icons.schedule,
+                            count: '12',
+                            label: 'Pending\nReviews',
+                            iconColor: const Color(0xFFFF4444),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.chat_bubble_outline,
-                          count: '45',
-                          label: 'Total\nComments',
-                          iconColor: const Color(0xFFFF4444),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TotalCommentsScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: _buildStatCard(
+                            icon: Icons.chat_bubble_outline,
+                            count: '45',
+                            label: 'Total\nComments',
+                            iconColor: const Color(0xFFFF4444),
+                          ),
                         ),
                       ),
                     ],
@@ -226,6 +273,29 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
                       color: Colors.black,
                     ),
                   ),
+
+                  // Trombonne to visualize file picking
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(
+                      Icons.attach_file_outlined,
+                      color: Colors.grey[400],
+                      size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          filePath ?? 'No file chosen',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: filePath != null ? Colors.black87 : Colors.grey[500],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -258,15 +328,15 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
                   Text(
                     'Attach your proposed corrected files or supplementary materials here. Max 5 files, 20MB each.',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
+                      fontSize: 12,
+                      color: const Color.fromARGB(255, 117, 117, 117),
                     ),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () => push(context, '/new-correction'),
+                      onPressed: _pickFile,
                       icon: const Icon(Icons.attach_file, color: Color(0xFF4A90E2)),
                       label: const Text(
                         'Attach New File',

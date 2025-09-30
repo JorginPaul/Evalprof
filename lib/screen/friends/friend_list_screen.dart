@@ -1,7 +1,9 @@
+import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import '../../utils/helpers.dart';
 import '../../widgets/bottom_navbar.dart';
-import 'friend_search_screen.dart'; // Add this import
+import 'package:Evalprof/screen/friends/friend_search_screen.dart'; // Add this import
 
 class FriendsScreen extends StatefulWidget {
   const FriendsScreen({super.key});
@@ -110,7 +112,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxContentWidth = (screenWidth > 800) ? 800.0 : screenWidth;
+    final maxContentWidth = (screenWidth > 900) ? 900.0 : screenWidth;
     final horizontalPadding = (screenWidth - maxContentWidth) / 2;
 
     return Scaffold(
@@ -123,29 +125,29 @@ class _FriendsScreenState extends State<FriendsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black87,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: const Icon(Icons.notifications_outlined, color: Color(0xFFFF4444)),
             onPressed: () {
-              // Handle notifications
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationScreen())
+              );
             },
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.black87,
-              child: const Text(
-                'JD',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen())
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[300],
+                child: const Icon(Icons.person, size: 20, color: Colors.white),
               ),
             ),
           ),

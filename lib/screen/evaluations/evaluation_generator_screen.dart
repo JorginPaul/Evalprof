@@ -1,3 +1,4 @@
+import 'package:Evalprof/screen/notifications/notification_screen.dart';
 import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -509,13 +510,29 @@ Time Allocation: 2 hours
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const ProfileScreen()),
+                MaterialPageRoute(builder: (context) => const NotificationScreen())
               );
             },
           ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen())
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[300],
+                child: const Icon(Icons.person, size: 20, color: Colors.white),
+              ),
+            ),
+          ),
         ],
       ),
+      
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(

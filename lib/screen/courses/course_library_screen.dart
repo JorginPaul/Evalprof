@@ -1,3 +1,5 @@
+import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navbar.dart';
 import '../../utils/helpers.dart';
@@ -160,15 +162,28 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () {},
+            icon: const Icon(Icons.notifications_outlined, color: Color(0xFFFF4444)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationScreen())
+              );
+            },
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.grey[200],
-              child: const Icon(Icons.person, size: 20, color: Colors.grey),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen())
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[300],
+                child: const Icon(Icons.person, size: 20, color: Colors.white),
+              ),
             ),
           ),
         ],

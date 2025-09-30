@@ -336,6 +336,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required double buttonSize,
     }) {
     return InkWell(
+      /*
       onTap: () {
         if (activity['title'] == 'Course Uploaded') {
           push(context, '/course-list');
@@ -345,6 +346,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           push(context, '/friends');
         }
       }, // Handle view action
+      */
       child: Container(
         constraints: const BoxConstraints(minHeight: 80, maxHeight: 120),
         padding: const EdgeInsets.all(16),
@@ -405,18 +407,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
 
             Container(
-              padding: EdgeInsets.symmetric(horizontal: padding * 0.75, vertical: padding * 0.375),
+              padding: EdgeInsets.symmetric(horizontal: padding * 0.20, vertical: padding * 0.005),
               decoration: BoxDecoration(
                 border: Border.all(color: primaryColor),
                 borderRadius: BorderRadius.circular(16),
               ),
               
-              child: Text(
-                'View',
-                style: TextStyle(
-                  fontSize: buttonSize,
-                  color: primaryColor,
-                  fontWeight: FontWeight.w500,
+              child: TextButton(
+                onPressed: () {
+                  if (activity['title'] == 'Course Uploaded') {
+                    push(context, '/course-list');
+                  } else if (activity['title'] == 'Correction Suggested') {
+                    push(context, '/corrections');
+                  } else if (activity['title'] == 'New Friend') {
+                    push(context, '/friends');
+                  }
+                },
+                child: Text(
+                  'View',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

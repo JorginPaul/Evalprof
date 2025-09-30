@@ -1,3 +1,5 @@
+import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../widgets/bottom_navbar.dart';
@@ -21,7 +23,7 @@ class _CourseUploadScreenState extends State<CourseUploadScreen> {
   Future<void> _pickFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx'],
+      allowedExtensions: ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xlt', 'mp3', 'mp4'],
     );
     if (result != null) {
       setState(() {
@@ -88,7 +90,7 @@ class _CourseUploadScreenState extends State<CourseUploadScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFFF4444)),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -101,21 +103,27 @@ class _CourseUploadScreenState extends State<CourseUploadScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.black),
-            onPressed: () {},
+            icon: const Icon(Icons.notifications_outlined, color: Color(0xFFFF4444)),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationScreen())
+              );
+            },
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: Color(0xFFFF4444),
-              child: const Text(
-                'EP',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfileScreen())
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.grey[300],
+                child: const Icon(Icons.person, size: 20, color: Colors.white),
               ),
             ),
           ),

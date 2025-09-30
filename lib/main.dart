@@ -16,6 +16,7 @@ import 'package:Evalprof/screen/evaluations/evaluation_list_screen.dart';
 import 'package:Evalprof/screen/friends/friend_list_screen.dart';
 import 'package:Evalprof/screen/friends/friend_search_screen.dart';
 import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:Evalprof/screen/profile/edit_profile.dart';
 import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -39,9 +40,9 @@ class LecturerHubApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
-      initialRoute: '/login',
+      initialRoute: '/splashpage',
       routes: {
-        '/splashpage': (_) => SplashPage(),
+        '/splashpage': (_) => SplashScreens(),
         '/login': (_) => LoginScreen(),
         '/register': (_) => RegisterScreen(),
         '/dashboard': (_) => const DashboardScreen(),
@@ -55,8 +56,20 @@ class LecturerHubApp extends StatelessWidget {
         '/friend-search': (_) => const FriendSearchScreen(),
         '/profile': (_) => const ProfileScreen(),
         '/notification': (_) => const NotificationScreen(),
-        '/pending-reviews': (_) => const PendingReviews(),
-        '/total-comments': (_) => const TotalComments(),
+        '/pending-reviews': (_) => const PendingReviewsScreen(),
+        '/total-comments': (_) => const TotalCommentsScreen(),
+        '/edit_profile': (_) => EditProfile(
+          currentName: '',
+          currentEmail: '',
+          currentRole: '',
+          currentBio: '',
+          currentDepartment: '',
+          currentInstitution: '',
+          currentPhone: '',
+          currentLocation: '',
+          currentProfileImage: '',
+        ),
+        '/course-detail': (_) => const CourseDetailScreen(),
       },
       
       // onGenerateRoute for dynamic details

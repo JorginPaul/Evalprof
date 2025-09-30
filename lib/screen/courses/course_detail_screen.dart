@@ -1,4 +1,6 @@
+import 'package:Evalprof/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:Evalprof/screen/profile/profile_screen.dart'; // Adjust the import path as needed
 
 class CourseDetailScreen extends StatelessWidget {
   final String? courseId; // Optional for backward compatibility
@@ -52,6 +54,45 @@ class CourseDetailScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
+            onPressed: () {
+              // Show notifications or handle notification action
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('No new notifications'),
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: primaryColor,
+                child: const Text(
+                  'JD',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
@@ -283,11 +324,13 @@ class CourseDetailScreen extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: (maxWidth * 0.025).clamp(14.0, 16.0),
-            color: Colors.grey[700],
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: (maxWidth * 0.025).clamp(14.0, 16.0),
+              color: Colors.grey[700],
+            ),
           ),
         ),
       ],
@@ -330,7 +373,7 @@ class CourseDetailScreen extends StatelessWidget {
 
   Widget _buildTagsSection(Map<String, dynamic> course, double maxWidth) {
     final tagsString = course['tags'] ?? '';
-    final tags = tagsString.isNotEmpty ? tagsString.split(', ') : ['No tags'];
+    final tags = tagsString.isNotEmpty ? tagsString.split(', ') : <String>['No tags'];
     final cardPadding = (maxWidth * 0.04).clamp(16.0, 24.0);
     
     return Card(
@@ -353,7 +396,7 @@ class CourseDetailScreen extends StatelessWidget {
             Wrap(
               spacing: (maxWidth * 0.02).clamp(8.0, 12.0),
               runSpacing: (maxWidth * 0.015).clamp(6.0, 8.0),
-              children: tags.map((tag) => Container(
+              children: tags.map<Widget>((tag) => Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: (maxWidth * 0.025).clamp(12.0, 16.0),
                   vertical: (maxWidth * 0.015).clamp(6.0, 8.0),
@@ -478,8 +521,16 @@ class CourseDetailScreen extends StatelessWidget {
           width: double.infinity,
           height: buttonHeight,
           child: ElevatedButton.icon(
-            onPressed: () =>
-                Navigator.pushNamed(context, '/evaluation-generator'),
+            onPressed: () {
+              // Navigate to evaluation generator or show message if route doesn't exist
+              try {
+                Navigator.pushNamed(context, '/evaluation-generator');
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Evaluation generator coming soon!')),
+                );
+              }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,
               foregroundColor: Colors.white,
@@ -510,7 +561,6 @@ class CourseDetailScreen extends StatelessWidget {
                 height: buttonHeight * 0.85,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    // Handle download action
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Download started')),
                     );
@@ -542,7 +592,6 @@ class CourseDetailScreen extends StatelessWidget {
                 height: buttonHeight * 0.85,
                 child: OutlinedButton.icon(
                   onPressed: () {
-                    // Handle share action
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Shared successfully')),
                     );
