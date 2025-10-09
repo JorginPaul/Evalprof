@@ -89,6 +89,14 @@ class BottomNavbar extends StatelessWidget {
               ),
               label: 'Friends',
             ),
+            BottomNavigationBarItem(
+              icon: _buildNavItem(
+                icon: Icons.people_outline,
+                selectedIcon: Icons.people,
+                isSelected: currentIndex == 5,
+              ),
+              label: 'Chats',
+            ),
           ],
         ),
       ),

@@ -1,10 +1,7 @@
-import 'package:Evalprof/screen/auth/dashboard_screen.dart';
-import 'package:Evalprof/screen/corrections/pending_reviews.dart';
-import 'package:Evalprof/screen/corrections/total_comments.dart';
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
-import 'package:Evalprof/screen/profile/profile_screen.dart';
-import 'package:Evalprof/screen/corrections/pending_reviews.dart';
-import 'package:Evalprof/screen/corrections/total_comments.dart';
+import 'package:EvalProfs/screen/corrections/pending_reviews.dart';
+import 'package:EvalProfs/screen/corrections/total_comments.dart';
+import 'package:EvalProfs/screen/notifications/notification_screen.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../../utils/helpers.dart';
@@ -18,7 +15,6 @@ class CorrectionListScreen extends StatefulWidget {
 }
 
 class _CorrectionListScreenState extends State<CorrectionListScreen> {
-  static const Color primaryColor = Color(0xFFFF4444);
 
   // File picker
   String? filePath;
@@ -53,6 +49,9 @@ class _CorrectionListScreenState extends State<CorrectionListScreen> {
         break;
       case 4:
         replace(context, '/friends');
+        break;
+      case 5:
+        replace(context, '/chat');
         break;
     }
   }

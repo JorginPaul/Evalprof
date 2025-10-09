@@ -1,4 +1,4 @@
-name: Evalprof
+name: EvalProfs
 description: "Evalprof project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -30,16 +30,19 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fl_chart: ^0.66.0
+  fl_chart: ^0.66.2
   path_provider: ^2.1.1
-  permission_handler: ^11.0.1
+  permission_handler: ^12.0.1
   open_file: ^3.3.2
   pdf: ^3.10.4
-  share_plus: ^7.2.1
+  share_plus: ^12.0.0
   provider: ^6.0.5
-  flutter_secure_storage: ^8.0.0
-  file_picker: ^5.3.2
+  flutter_secure_storage: ^9.2.4
+  file_picker: ^10.3.3
   http: ^1.1.0
+  socket_io_client: ^2.0.0
+  cached_network_image: ^3.2.3
+  uuid: ^3.0.7
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -54,7 +57,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 #dependency_overrides: 
 # file_picker_platfomrm_interface: ^5.3.2

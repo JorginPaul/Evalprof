@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class AppConstants {
-  static const String appName = 'EvalProf';
-  static const String apiBaseUrl =
-      'https://your-api.example.com'; // TODO: set real base URL
-  static const String storageBucket = 'your-firebase-bucket'; // TODO
+  static const String appName = 'EvalProfs';
+  static const String apiBaseUrl = 'https://10.0.2.2:5000/api';
+  static const String socketUrl = 'https://10.0.2.2:5000/api';
+
+ // static const String storageBucket = 'your-firebase-bucket';
 }
 
 class AppColors {
-  static const primary = Colors.redAccent;
+  static const primary = Color(0xFFFF4444);
   static const bg = Color(0xFFF7F7FB);
   static const text = Color(0xFF1E1E2D);
   static const muted = Color(0xFF6B7280);

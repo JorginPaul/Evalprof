@@ -1,4 +1,4 @@
-import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import '../../utils/helpers.dart';
 

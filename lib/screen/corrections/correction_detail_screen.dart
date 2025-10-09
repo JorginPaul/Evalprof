@@ -1,4 +1,4 @@
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:EvalProfs/screen/notifications/notification_screen.dart';
 import 'package:flutter/material.dart';
 
 class CorrectionDetailScreen extends StatelessWidget {

@@ -1,5 +1,5 @@
-import 'package:Evalprof/screen/auth/login_screen.dart';
-import 'package:Evalprof/screen/profile/edit_profile.dart';
+import 'package:EvalProfs/screen/profile/edit_profile.dart';
+import 'package:EvalProfs/screen/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
+import 'package:EvalProfs/screen/notifications/notification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_picker/file_picker.dart';
@@ -35,9 +35,10 @@ class _NewCorrectionScreenState extends State<NewCorrectionScreen> {
   Future<void> _pickImages() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
+        withData: true,
         type: FileType.image,
         allowMultiple: true,
-        allowCompression: true,
+        compressionQuality: 80,
       );
 
       if (result != null && result.files.isNotEmpty) {
@@ -361,12 +362,10 @@ class _NewCorrectionScreenState extends State<NewCorrectionScreen> {
   Widget _buildImageItem(PlatformFile file, int index) {
     // Get file size in KB or MB
     String fileSize = '';
-    if (file.size != null) {
-      if (file.size! < 1024 * 1024) {
-        fileSize = '${(file.size! / 1024).toStringAsFixed(1)} KB';
-      } else {
-        fileSize = '${(file.size! / (1024 * 1024)).toStringAsFixed(1)} MB';
-      }
+    if (file.size < 1024 * 1024) {
+      fileSize = '${(file.size / 1024).toStringAsFixed(1)} KB';
+    } else {
+      fileSize = '${(file.size / (1024 * 1024)).toStringAsFixed(1)} MB';
     }
 
     return Container(
@@ -384,7 +383,7 @@ class _NewCorrectionScreenState extends State<NewCorrectionScreen> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: kIsWeb && file.bytes != null

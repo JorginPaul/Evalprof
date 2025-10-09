@@ -1,4 +1,4 @@
-import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../utils/helpers.dart';
@@ -29,6 +29,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         break;
       case 4:
         replace(context, '/friends');
+        break;
+      case 5:
+        replace(context, '/chat');
         break;
     }
   }

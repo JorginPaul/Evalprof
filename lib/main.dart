@@ -1,27 +1,40 @@
 // Screens
-import 'package:Evalprof/screen/auth/dashboard_screen.dart';
-import 'package:Evalprof/screen/auth/login_screen.dart';
-import 'package:Evalprof/screen/auth/register_screen.dart';
-import 'package:Evalprof/screen/auth/splash_page.dart';
-import 'package:Evalprof/screen/corrections/correction_detail_screen.dart';
-import 'package:Evalprof/screen/corrections/correction_panel.dart';
-import 'package:Evalprof/screen/corrections/new_correction_screen.dart';
-import 'package:Evalprof/screen/corrections/pending_reviews.dart';
-import 'package:Evalprof/screen/corrections/total_comments.dart';
-import 'package:Evalprof/screen/courses/course_detail_screen.dart';
-import 'package:Evalprof/screen/courses/course_library_screen.dart';
-import 'package:Evalprof/screen/courses/course_upload_screen.dart';
-import 'package:Evalprof/screen/evaluations/evaluation_generator_screen.dart';
-import 'package:Evalprof/screen/evaluations/evaluation_list_screen.dart';
-import 'package:Evalprof/screen/friends/friend_list_screen.dart';
-import 'package:Evalprof/screen/friends/friend_search_screen.dart';
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
-import 'package:Evalprof/screen/profile/edit_profile.dart';
-import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/models/user_model.dart';
+import 'package:EvalProfs/screen/auth/dashboard_screen.dart';
+import 'package:EvalProfs/screen/auth/login_screen.dart';
+import 'package:EvalProfs/screen/auth/register_screen.dart';
+import 'package:EvalProfs/screen/auth/splash_page.dart';
+import 'package:EvalProfs/screen/corrections/correction_detail_screen.dart';
+import 'package:EvalProfs/screen/corrections/correction_panel.dart';
+import 'package:EvalProfs/screen/corrections/new_correction_screen.dart';
+import 'package:EvalProfs/screen/corrections/pending_reviews.dart';
+import 'package:EvalProfs/screen/corrections/total_comments.dart';
+import 'package:EvalProfs/screen/courses/course_detail_screen.dart';
+import 'package:EvalProfs/screen/courses/course_library_screen.dart';
+import 'package:EvalProfs/screen/courses/course_upload_screen.dart';
+import 'package:EvalProfs/screen/evaluations/evaluation_generator_screen.dart';
+import 'package:EvalProfs/screen/evaluations/evaluation_list_screen.dart';
+import 'package:EvalProfs/screen/friends/friend_list_screen.dart';
+import 'package:EvalProfs/screen/friends/friend_search_screen.dart';
+import 'package:EvalProfs/screen/notifications/notification_screen.dart';
+import 'package:EvalProfs/screen/profile/edit_profile.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/screen/chat/chat_screen.dart';
+import 'package:EvalProfs/services/chat_service.dart';
+import 'package:EvalProfs/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const LecturerHubApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ChatService(token: '')),
+        ChangeNotifierProvider(create: (_) => AuthService()),
+      ],
+      child: const LecturerHubApp(),
+    ),
+  );
 }
 
 class LecturerHubApp extends StatelessWidget {
@@ -30,7 +43,7 @@ class LecturerHubApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'EvalProf. Lecturer Hub',
+      title: 'EvalProfs. Lecturer Hub',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.red,
@@ -40,7 +53,7 @@ class LecturerHubApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
-      initialRoute: '/splashpage',
+      initialRoute: '/dashboard',
       routes: {
         '/splashpage': (_) => SplashScreens(),
         '/login': (_) => LoginScreen(),
@@ -74,6 +87,7 @@ class LecturerHubApp extends StatelessWidget {
       
       // onGenerateRoute for dynamic details
       onGenerateRoute: (settings) {
+        // Course details Route
         if (settings.name == '/course-detail') {
           final args = settings.arguments as Map<String, dynamic>? ?? {};
           return MaterialPageRoute(
@@ -87,6 +101,20 @@ class LecturerHubApp extends StatelessWidget {
                 CorrectionDetailScreen(correctionId: args['id'] ?? ''),
           );
         }
+        // Chat Route
+        if (settings.name == '/chat') {
+          final args = settings.arguments as Map<String, dynamic>;
+          final conversationId = args['conversationId'] as String? ?? '';
+          final otherUser = args['otherUser'] as UserModel;
+          
+            return MaterialPageRoute(
+              builder: (_) => ChatScreen(
+                conversationId: 'conversationId',
+                otherUser: otherUser,
+              ),
+            );
+          }
+
         return null;
       },
     );

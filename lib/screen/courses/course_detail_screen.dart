@@ -1,6 +1,5 @@
-import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:Evalprof/screen/profile/profile_screen.dart'; // Adjust the import path as needed
 
 class CourseDetailScreen extends StatelessWidget {
   final String? courseId; // Optional for backward compatibility

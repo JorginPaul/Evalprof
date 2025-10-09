@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../utils/helpers.dart';
 
 class FriendSearchScreen extends StatefulWidget {
   const FriendSearchScreen({super.key});

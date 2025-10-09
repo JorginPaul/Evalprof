@@ -1,5 +1,5 @@
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
-import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/screen/notifications/notification_screen.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/bottom_navbar.dart';
 import '../../utils/helpers.dart';
@@ -398,6 +398,9 @@ class _CourseLibraryScreenState extends State<CourseLibraryScreen> {
               break;
             case 4:
               replace(context, '/friends');
+              break;
+            case 5:
+              replace(context, '/chat');
               break;
           }
         },

@@ -1,32 +1,32 @@
-import '../constants/app_constants.dart';
-import 'api_service.dart';
+import 'package:EvalProfs/models/user_model.dart';
+import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
-class AuthService {
-  final _api = ApiService(baseUrl: AppConstants.apiBaseUrl);
+class AuthService with ChangeNotifier {
+  final ApiService api = ApiService();
+  String? _token; // Store token for future requests
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
-    // TODO: connect to Firebase Auth or your backend
-    final res = await _api.post('/auth/login', {
-      'email': email,
-      'password': password,
-    });
-    return res;
+  Future<UserModel?> login(String email, String password) async {
+    try {
+      final response = await api.postRequest("auth/login", {
+        "email": email,
+        "password": password,
+      });
+
+      if (response['success'] == true) {
+        _token = response['token']; // Store token
+        final user = UserModel.fromJson(response['user']); // Fixed syntax
+        return user;
+      } else {
+        print("Login failed: ${response['message']}");
+        return null;
+      }
+    } catch (e) {
+      print("Login failed: $e");
+      return null;
+    }
   }
 
-  Future<Map<String, dynamic>> register(
-    String name,
-    String email,
-    String password,
-  ) async {
-    final res = await _api.post('/auth/register', {
-      'name': name,
-      'email': email,
-      'password': password,
-    });
-    return res;
-  }
-
-  Future<void> logout() async {
-    // TODO
-  }
+  // Getter for token
+  String? get token => _token;
 }

@@ -1,5 +1,5 @@
-import 'package:Evalprof/screen/notifications/notification_screen.dart';
-import 'package:Evalprof/screen/profile/profile_screen.dart';
+import 'package:EvalProfs/screen/notifications/notification_screen.dart';
+import 'package:EvalProfs/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -786,6 +786,9 @@ Time Allocation: 2 hours
               break;
             case 4:
               replace(context, '/friends');
+              break;
+            case 5:
+              replace(context, '/chat');
               break;
           }
         },
