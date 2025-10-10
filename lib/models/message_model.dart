@@ -4,7 +4,7 @@ class MessageModel {
   final String senderId;
   final String text;
   final DateTime createdAt;
-  bool read;
+  final bool isRead;
 
   MessageModel({
     required this.id,
@@ -12,7 +12,7 @@ class MessageModel {
     required this.senderId,
     required this.text,
     required this.createdAt,
-    this.read = false,
+    this.isRead = false,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> j) => MessageModel(
@@ -21,7 +21,7 @@ class MessageModel {
         senderId: j['senderId'] as String,
         text: j['text'] as String,
         createdAt: DateTime.parse(j['createdAt'] as String),
-        read: j['read'] as bool? ?? false,
+        isRead: j['isRead'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {

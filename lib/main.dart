@@ -25,7 +25,11 @@ import 'package:EvalProfs/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final authService = AuthService();
+  await authService.tryAutoLogin();
+  
   runApp(
     MultiProvider(
       providers: [

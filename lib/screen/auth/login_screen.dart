@@ -1,4 +1,3 @@
-import 'package:EvalProfs/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Make sure AuthService is provided
 import '../../utils/helpers.dart';
@@ -26,15 +25,15 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = true);
 
     try {
-      final auth = context.read<AuthService>();
-      UserModel? user = await auth.login(
+      final auth = Provider.of<AuthService>(context, listen: false);
+      final success = await auth.login(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
       if (!mounted) return;
 
-      if (user != null) {
+      if (success) {
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

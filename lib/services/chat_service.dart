@@ -21,14 +21,14 @@ class ChatService with ChangeNotifier {
 
   // Initialize and connect socket
   void connect() {
-    if (_socket != null) return;
+    if (_socket != null && connected) return;
     _socket = IO.io(
       AppConstants.socketUrl,
-      <String, dynamic>{
-        'transports': ['websocket'],
-        'autoConnect': false,
-        'extraHeaders': {'Authorization': 'Bearer $token'},
-      },
+      IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .disableAutoConnect()
+        .setExtraHeaders({'Authorization': 'Bearer $token'})
+        .build(),
     );
 
     _socket!.on('connect', (_) {
@@ -49,7 +49,7 @@ class ChatService with ChangeNotifier {
         final m = MessageModel.fromJson(Map<String, dynamic>.from(data));
         final convId = m.conversationId;
         messages.putIfAbsent(convId, () => []);
-        messages[convId]!.insert(0, m); // newest first
+        messages[convId]!.add(m); // newest first
         notifyListeners();
       } catch (e) {
         debugPrint('message decode error: $e');
@@ -74,56 +74,68 @@ class ChatService with ChangeNotifier {
 
   // Fetch conversations via REST
   Future<void> fetchConversations() async {
-    final res = await http.get(
-      Uri.parse('$_base/api/conversations'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (res.statusCode == 200) {
-      final list = jsonDecode(res.body) as List<dynamic>;
-      conversations =
-          list.map((c) => ConversationModel.fromJson(c as Map<String, dynamic>)).toList();
-      notifyListeners();
-    } else {
-      debugPrint('fetchConversations failed ${res.statusCode}');
+    try{
+      final res = await http.get(
+        Uri.parse('$_base/api/conversations'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (res.statusCode == 200) {
+          final list = jsonDecode(res.body) as List<dynamic>;
+        conversations =
+            list.map((c) => ConversationModel.fromJson(c as Map<String, dynamic>)).toList();
+        notifyListeners();
+      } else {
+        debugPrint('fetchConversations failed ${res.statusCode}');
+      }
+    }catch (e) {
+      debugPrint('fetchConversations error: $e');
     }
   }
 
   // Fetch messages for a conversation (server returns paginated newest last)
   Future<void> fetchMessages(String conversationId) async {
-    final res = await http.get(
-      Uri.parse('$_base/api/conversations/$conversationId/messages'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (res.statusCode == 200) {
-      final list = jsonDecode(res.body) as List<dynamic>;
-      messages[conversationId] = list
-          .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
-          .toList()
-          .reversed
-          .toList(); // we want newest last in UI
-      notifyListeners();
-    } else {
-      debugPrint('fetchMessages failed ${res.statusCode}');
+    try{
+      final res = await http.get(
+        Uri.parse('$_base/api/conversations/$conversationId/messages'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (res.statusCode == 200) {
+        final list = jsonDecode(res.body) as List<dynamic>;
+        messages[conversationId] = list
+            .map((m) => MessageModel.fromJson(m as Map<String, dynamic>))
+            .toList()
+            .reversed
+            .toList(); // we want newest last in UI
+        notifyListeners();
+      } else {
+        debugPrint('fetchMessages failed ${res.statusCode}');
+      }
+    }catch (e) {
+      debugPrint('fetchMessages error: $e');
     }
   }
 
   // Create conversation or return existing (participants: [otherUserId])
   Future<ConversationModel?> createConversationWith(String otherUserId) async {
-    final res = await http.post(
-      Uri.parse('$_base/api/conversations'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json'
-      },
-      body: jsonEncode({'participantId': otherUserId}),
-    );
-    if (res.statusCode == 200 || res.statusCode == 201) {
-      final conv = ConversationModel.fromJson(jsonDecode(res.body));
-      // add/replace local list
-      conversations.removeWhere((c) => c.id == conv.id);
-      conversations.insert(0, conv);
-      notifyListeners();
-      return conv;
+    try{
+      final res = await http.post(
+        Uri.parse('$_base/api/conversations'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({'participantId': otherUserId}),
+      );
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final conv = ConversationModel.fromJson(jsonDecode(res.body));
+        // add/replace local list
+        conversations.removeWhere((c) => c.id == conv.id);
+        conversations.insert(0, conv);
+        notifyListeners();
+        return conv;
+      }
+    }catch (e) {
+      debugPrint('createConversationWith error: $e');
     }
     return null;
   }
@@ -140,50 +152,50 @@ class ChatService with ChangeNotifier {
       'senderId': senderId,
     };
 
-    // optimistic locally
     final optimistic = MessageModel(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       conversationId: conversationId,
       senderId: senderId,
       text: text,
       createdAt: DateTime.now(),
-      read: false,
+      isRead: false,
     );
+
     messages.putIfAbsent(conversationId, () => []);
     messages[conversationId]!.add(optimistic);
     notifyListeners();
 
-    // emit via socket
     _socket?.emit('send_message', payload);
 
-    // persist via REST (server validates and returns saved message)
-    final res = await http.post(
-      Uri.parse('$_base/api/messages'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json'
-      },
-      body: jsonEncode(payload),
-    );
-
-    if (res.statusCode == 200 || res.statusCode == 201) {
-      // Optionally replace optimistic with server message
-      final saved = MessageModel.fromJson(jsonDecode(res.body));
-      final list = messages[conversationId]!;
-      final idx = list.indexWhere((m) => m.id == optimistic.id);
-      if (idx >= 0) {
-        list[idx] = saved;
+    try {
+      final res = await http.post(
+        Uri.parse('$_base/api/messages'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode(payload),
+      );
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final saved = MessageModel.fromJson(jsonDecode(res.body));
+        final list = messages[conversationId]!;
+        final idx = list.indexWhere((m) => m.id == optimistic.id);
+        if (idx >= 0) list[idx] = saved;
+        notifyListeners();
       } else {
-        list.add(saved);
+        debugPrint('persist message failed: ${res.statusCode}');
       }
-      notifyListeners();
-    } else {
-      debugPrint('persist message failed: ${res.statusCode}');
+    } catch (e) {
+      debugPrint('sendMessage error: $e');
     }
   }
 
   void disposeService() {
+    // Fully reset state on Logout
     _socket?.disconnect();
     _socket = null;
+    connected = false;
+    messages.clear();
+    conversations.clear();
   }
 }
