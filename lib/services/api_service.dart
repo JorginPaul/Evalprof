@@ -31,12 +31,17 @@ class ApiService {
     }
   }
 
-  Future <dynamic> postRequest(String endpoint, Map<String, dynamic> data) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/$endpoint'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
-    );
-    return _handleResponse(response);
+  Future<dynamic> postRequest(String endpoint, Map<String, dynamic> data) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+      return _handleResponse(response);
+    } catch (e) {
+      print('🔴 POST error ($endpoint): $e');
+      rethrow;
+    }
   }
 }

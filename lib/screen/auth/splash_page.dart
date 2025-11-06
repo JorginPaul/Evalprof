@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../services/auth_service.dart';
+import '../auth/login_screen.dart';
+import '../auth/dashboard_screen.dart';
 
 class SplashScreens extends StatefulWidget {
-  const SplashScreens({Key? key}) : super(key: key);
+  const SplashScreens({super.key});
 
   @override
   State<SplashScreens> createState() => _SplashScreensState();
@@ -10,12 +15,14 @@ class SplashScreens extends StatefulWidget {
 class _SplashScreensState extends State<SplashScreens> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  bool _checkingLogin = true;
 
   final List<SplashPage> _pages = [
     SplashPage(
       title: 'Transform Education\nAcross Africa',
-      subtitle: 'Join a revolutionary platform where educators collaborate, share, and elevate academic excellence together',
-      backgroundImage: 'assets/images/splash_collaboration.jpg',
+      subtitle:
+          'Join a revolutionary platform where educators collaborate, share, and elevate academic excellence together',
+      backgroundImage: 'assets/images/1.jpg',
       icon: '🌍',
       emoji: '👥',
       features: [
@@ -27,8 +34,9 @@ class _SplashScreensState extends State<SplashScreens> {
     ),
     SplashPage(
       title: 'AI-Powered\nEvaluation Generation',
-      subtitle: 'Create contextual, high-quality assessments in minutes with intelligent AI assistance tailored to your curriculum',
-      backgroundImage: 'assets/images/splash_ai.jpg',
+      subtitle:
+          'Create contextual, high-quality assessments in minutes with intelligent AI assistance tailored to your curriculum',
+      backgroundImage: 'assets/images/2.jpg',
       icon: '🤖',
       emoji: '✨',
       features: [
@@ -40,8 +48,9 @@ class _SplashScreensState extends State<SplashScreens> {
     ),
     SplashPage(
       title: 'Elevate Your\nTeaching Impact',
-      subtitle: 'Access peer-reviewed materials, give and receive feedback, and continuously improve your educational content',
-      backgroundImage: 'assets/images/splash_growth.jpg',
+      subtitle:
+          'Access peer-reviewed materials, give and receive feedback, and continuously improve your educational content',
+      backgroundImage: 'assets/images/3.jpg',
       icon: '📈',
       emoji: '🎓',
       features: [
@@ -54,6 +63,39 @@ class _SplashScreensState extends State<SplashScreens> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final auth = Provider.of<AuthService>(context, listen: false);
+    await auth.tryAutoLogin();
+
+    if (!mounted) return;
+
+    setState(() => _checkingLogin = false);
+
+    // Automatically navigate if already logged in
+    if (auth.isLoggedIn) {
+      _navigateToDashboard();
+    }
+  }
+
+  void _navigateToDashboard() {
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => const DashboardScreen(),
+        transitionDuration: const Duration(milliseconds: 800),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    );
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
@@ -61,6 +103,12 @@ class _SplashScreensState extends State<SplashScreens> {
 
   @override
   Widget build(BuildContext context) {
+    if (_checkingLogin) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       body: Stack(
         children: [
@@ -112,136 +160,122 @@ class _SplashScreensState extends State<SplashScreens> {
   }
 
   Widget _buildSplashPage(SplashPage page) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenHeight = constraints.maxHeight;
-        final screenWidth = constraints.maxWidth;
-        final isSmallScreen = screenHeight < 700;
-        final isMediumScreen = screenHeight >= 700 && screenHeight < 850;
-        
-        // Responsive sizing
-        final iconSize = isSmallScreen ? 100.0 : (isMediumScreen ? 120.0 : 140.0);
-        final titleFontSize = isSmallScreen ? 28.0 : (isMediumScreen ? 32.0 : 36.0);
-        final subtitleFontSize = isSmallScreen ? 14.0 : 16.0;
-        final featureFontSize = isSmallScreen ? 14.0 : 16.0;
-        final topPadding = screenHeight * 0.08;
-        final contentPadding = isSmallScreen ? 16.0 : 24.0;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenHeight < 700;
+    final isMediumScreen = screenHeight >= 700 && screenHeight < 850;
 
-        return Stack(
-          children: [
-            // Background Image with overlay
-            Positioned.fill(
-              child: Image.asset(
-                page.backgroundImage,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  // Fallback gradient if image fails to load
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: _getGradientColors(page.illustrationType),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            // Dark overlay for better text readability
-            Positioned.fill(
-              child: Container(
+    final iconSize = isSmallScreen ? 100.0 : (isMediumScreen ? 120.0 : 140.0);
+    final titleFontSize = isSmallScreen ? 28.0 : (isMediumScreen ? 32.0 : 36.0);
+    final subtitleFontSize = isSmallScreen ? 14.0 : 16.0;
+    final featureFontSize = isSmallScreen ? 14.0 : 16.0;
+    final topPadding = screenHeight * 0.08;
+    final contentPadding = isSmallScreen ? 16.0 : 24.0;
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            page.backgroundImage,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.5),
-                      Colors.black.withOpacity(0.7),
-                      Colors.black.withOpacity(0.8),
-                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: _getGradientColors(page.illustrationType),
                   ),
                 ),
+              );
+            },
+          ),
+        ),
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.5),
+                  Colors.black.withOpacity(0.7),
+                  Colors.black.withOpacity(0.8),
+                ],
               ),
             ),
-            // Content
-            SafeArea(
-              child: SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: screenHeight - MediaQuery.of(context).padding.top - 
-                              MediaQuery.of(context).padding.bottom,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: contentPadding),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(height: topPadding),
-                        _buildIllustration(
-                          page.illustrationType,
-                          page.emoji,
-                          iconSize,
-                        ),
-                        SizedBox(height: isSmallScreen ? 24 : 40),
-                        Text(
-                          page.title,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: titleFontSize,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            height: 1.2,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.5),
-                                blurRadius: 10,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+          ),
+        ),
+        SafeArea(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: screenHeight -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom,
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: contentPadding),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(height: topPadding),
+                    _buildIllustration(page.illustrationType, page.emoji, iconSize),
+                    SizedBox(height: isSmallScreen ? 24 : 40),
+                    Text(
+                      page.title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: titleFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.5),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
                           ),
-                        ),
-                        SizedBox(height: isSmallScreen ? 12 : 16),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.05,
-                          ),
-                          child: Text(
-                            page.subtitle,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: subtitleFontSize,
-                              color: Colors.white.withOpacity(0.95),
-                              height: 1.5,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withOpacity(0.5),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: isSmallScreen ? 12 : 16),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                      child: Text(
+                        page.subtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: subtitleFontSize,
+                          color: Colors.white.withOpacity(0.95),
+                          height: 1.5,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.5),
+                              blurRadius: 8,
+                              offset: const Offset(0, 1),
                             ),
-                          ),
+                          ],
                         ),
-                        SizedBox(height: isSmallScreen ? 24 : 32),
-                        ...page.features.asMap().entries.map((entry) => 
-                          _buildFeatureItem(
+                      ),
+                    ),
+                    SizedBox(height: isSmallScreen ? 24 : 32),
+                    ...page.features.asMap().entries.map(
+                          (entry) => _buildFeatureItem(
                             entry.value,
                             featureFontSize,
                             isSmallScreen,
                             key: ValueKey('feature_${_currentPage}_${entry.key}'),
-                          )
+                          ),
                         ),
-                        SizedBox(height: 140), // Space for bottom navigation
-                      ],
-                    ),
-                  ),
+                    SizedBox(height: 140),
+                  ],
                 ),
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
   }
 
@@ -422,8 +456,22 @@ class _SplashScreensState extends State<SplashScreens> {
                 curve: Curves.easeInOut,
               );
             } else {
-              // Navigate to main app or login
-              Navigator.pushReplacementNamed(context, '/login');
+              // If not logged in, navigate to login
+              final auth = Provider.of<AuthService>(context, listen: false);
+              if (auth.isLoggedIn) {
+                _navigateToDashboard();
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (_, __, ___) => const LoginScreen(),
+                    transitionDuration: const Duration(milliseconds: 800),
+                    transitionsBuilder: (_, animation, __, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ),
+                );
+              }
             }
           },
           style: ElevatedButton.styleFrom(
@@ -434,7 +482,7 @@ class _SplashScreensState extends State<SplashScreens> {
               borderRadius: BorderRadius.circular(30),
             ),
             elevation: 8,
-            shadowColor: Colors.black.withOpacity(0.3),
+            shadowColor: const Color.fromARGB(255, 199, 194, 194).withOpacity(0.3),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

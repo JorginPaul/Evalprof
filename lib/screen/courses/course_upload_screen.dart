@@ -23,7 +23,7 @@ class _CourseUploadScreenState extends State<CourseUploadScreen> {
   String? _selectedAcademicYear = '2023-2024';
   String? _selectedFileName;
   String? _selectedFilePath;
-  List<String> _subjectTags = ['Computer Science', 'Data Structures', 'Algorithms'];
+  final List<String> _subjectTags = ['Computer Science', 'Data Structures', 'Algorithms'];
 
   // Pick file
   Future<void> _pickFile() async {

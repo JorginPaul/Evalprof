@@ -265,6 +265,9 @@ class _ChatScreenState extends State<ChatScreen> {
               CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.grey[300],
+                foregroundImage: widget.otherUser.avatarUrl != null
+                    ? NetworkImage(widget.otherUser.avatarUrl!)
+                    : null,
                 child: widget.otherUser.avatarUrl == null
                     ? Text(
                         widget.otherUser.name[0].toUpperCase(),
@@ -274,9 +277,6 @@ class _ChatScreenState extends State<ChatScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : null,
-                foregroundImage: widget.otherUser.avatarUrl != null
-                    ? NetworkImage(widget.otherUser.avatarUrl!)
                     : null,
               ),
               if (widget.otherUser.online)
@@ -482,14 +482,14 @@ class _ChatScreenState extends State<ChatScreen> {
             CircleAvatar(
               radius: 16,
               backgroundColor: Colors.grey[300],
+              foregroundImage: widget.otherUser.avatarUrl != null
+                  ? NetworkImage(widget.otherUser.avatarUrl!)
+                  : null,
               child: widget.otherUser.avatarUrl == null
                   ? Text(
                       widget.otherUser.name[0].toUpperCase(),
                       style: const TextStyle(fontSize: 12, color: Colors.white),
                     )
-                  : null,
-              foregroundImage: widget.otherUser.avatarUrl != null
-                  ? NetworkImage(widget.otherUser.avatarUrl!)
                   : null,
             )
           else if (!me)

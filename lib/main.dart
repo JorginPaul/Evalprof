@@ -1,40 +1,46 @@
-// Screens
-import 'package:EvalProfs/models/user_model.dart';
-import 'package:EvalProfs/screen/auth/dashboard_screen.dart';
-import 'package:EvalProfs/screen/auth/login_screen.dart';
-import 'package:EvalProfs/screen/auth/register_screen.dart';
-import 'package:EvalProfs/screen/auth/splash_page.dart';
-import 'package:EvalProfs/screen/corrections/correction_detail_screen.dart';
-import 'package:EvalProfs/screen/corrections/correction_panel.dart';
-import 'package:EvalProfs/screen/corrections/new_correction_screen.dart';
-import 'package:EvalProfs/screen/corrections/pending_reviews.dart';
-import 'package:EvalProfs/screen/corrections/total_comments.dart';
-import 'package:EvalProfs/screen/courses/course_detail_screen.dart';
-import 'package:EvalProfs/screen/courses/course_library_screen.dart';
-import 'package:EvalProfs/screen/courses/course_upload_screen.dart';
-import 'package:EvalProfs/screen/evaluations/evaluation_generator_screen.dart';
-import 'package:EvalProfs/screen/evaluations/evaluation_list_screen.dart';
-import 'package:EvalProfs/screen/friends/friend_list_screen.dart';
-import 'package:EvalProfs/screen/friends/friend_search_screen.dart';
-import 'package:EvalProfs/screen/notifications/notification_screen.dart';
-import 'package:EvalProfs/screen/profile/edit_profile.dart';
-import 'package:EvalProfs/screen/profile/profile_screen.dart';
-import 'package:EvalProfs/screen/chat/chat_screen.dart';
-import 'package:EvalProfs/services/chat_service.dart';
-import 'package:EvalProfs/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'services/auth_service.dart';
+import 'services/chat_service.dart';
+
+// Screens
+import 'screen/auth/splash_page.dart';
+import 'screen/auth/login_screen.dart';
+import 'screen/auth/register_screen.dart';
+import 'screen/auth/dashboard_screen.dart';
+import 'screen/courses/course_library_screen.dart';
+import 'screen/courses/course_upload_screen.dart';
+import 'screen/courses/course_detail_screen.dart';
+import 'screen/evaluations/evaluation_generator_screen.dart';
+import 'screen/evaluations/evaluation_list_screen.dart';
+import 'screen/corrections/correction_panel.dart';
+import 'screen/corrections/new_correction_screen.dart';
+import 'screen/corrections/pending_reviews.dart';
+import 'screen/corrections/total_comments.dart';
+import 'screen/corrections/correction_detail_screen.dart';
+import 'screen/friends/friend_list_screen.dart';
+import 'screen/friends/friend_search_screen.dart';
+import 'screen/notifications/notification_screen.dart';
+import 'screen/profile/profile_screen.dart';
+import 'screen/profile/edit_profile.dart';
+import 'screen/chat/chat_screen.dart';
+import 'models/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final authService = AuthService();
-  await authService.tryAutoLogin();
-  
+  final chatService = ChatService(token: '');
+
+  authService.linkChatService(chatService); // Link services
+
+  await authService.tryAutoLogin(); // auto-login first
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ChatService(token: '')),
-        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider.value(value: authService),
+        ChangeNotifierProvider.value(value: chatService),
       ],
       child: const LecturerHubApp(),
     ),
@@ -59,7 +65,7 @@ class LecturerHubApp extends StatelessWidget {
       ),
       initialRoute: '/dashboard',
       routes: {
-        '/splashpage': (_) => SplashScreens(),
+        '/splashscreen': (_) => const SplashScreens(),
         '/login': (_) => LoginScreen(),
         '/register': (_) => RegisterScreen(),
         '/dashboard': (_) => const DashboardScreen(),
@@ -76,28 +82,27 @@ class LecturerHubApp extends StatelessWidget {
         '/pending-reviews': (_) => const PendingReviewsScreen(),
         '/total-comments': (_) => const TotalCommentsScreen(),
         '/edit_profile': (_) => EditProfile(
-          currentName: '',
-          currentEmail: '',
-          currentRole: '',
-          currentBio: '',
-          currentDepartment: '',
-          currentInstitution: '',
-          currentPhone: '',
-          currentLocation: '',
-          currentProfileImage: '',
-        ),
-        '/course-detail': (_) => const CourseDetailScreen(),
+              currentName: '',
+              currentEmail: '',
+              currentRole: '',
+              currentBio: '',
+              currentDepartment: '',
+              currentInstitution: '',
+              currentPhone: '',
+              currentLocation: '',
+              currentProfileImage: '',
+            ),
       },
-      
-      // onGenerateRoute for dynamic details
       onGenerateRoute: (settings) {
-        // Course details Route
+        // Course details
         if (settings.name == '/course-detail') {
           final args = settings.arguments as Map<String, dynamic>? ?? {};
           return MaterialPageRoute(
             builder: (_) => CourseDetailScreen(courseId: args['id'] ?? ''),
           );
         }
+
+        // Correction details
         if (settings.name == '/correction-detail') {
           final args = settings.arguments as Map<String, dynamic>? ?? {};
           return MaterialPageRoute(
@@ -105,19 +110,20 @@ class LecturerHubApp extends StatelessWidget {
                 CorrectionDetailScreen(correctionId: args['id'] ?? ''),
           );
         }
-        // Chat Route
+
+        // Chat screen
         if (settings.name == '/chat') {
           final args = settings.arguments as Map<String, dynamic>;
           final conversationId = args['conversationId'] as String? ?? '';
           final otherUser = args['otherUser'] as UserModel;
-          
-            return MaterialPageRoute(
-              builder: (_) => ChatScreen(
-                conversationId: 'conversationId',
-                otherUser: otherUser,
-              ),
-            );
-          }
+
+          return MaterialPageRoute(
+            builder: (_) => ChatScreen(
+              conversationId: conversationId,
+              otherUser: otherUser,
+            ),
+          );
+        }
 
         return null;
       },

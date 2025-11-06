@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   static const String appName = 'EvalProfs';
-  static const String apiBaseUrl = 'http://10.0.2.2:5000';
+  static const String apiBaseUrl = 'http://10.0.2.2:5000/api';
   static const String socketUrl = 'http://10.0.2.2:5000';
 
  // static const String storageBucket = 'your-firebase-bucket';
