@@ -22,7 +22,7 @@ class _SplashScreensState extends State<SplashScreens> {
       title: 'Transform Education\nAcross Africa',
       subtitle:
           'Join a revolutionary platform where educators collaborate, share, and elevate academic excellence together',
-      backgroundImage: 'assets/images/1.jpg',
+      backgroundImage: '',
       icon: '🌍',
       emoji: '👥',
       features: [
@@ -36,7 +36,7 @@ class _SplashScreensState extends State<SplashScreens> {
       title: 'AI-Powered\nEvaluation Generation',
       subtitle:
           'Create contextual, high-quality assessments in minutes with intelligent AI assistance tailored to your curriculum',
-      backgroundImage: 'assets/images/2.jpg',
+      backgroundImage: '',
       icon: '🤖',
       emoji: '✨',
       features: [
@@ -50,7 +50,7 @@ class _SplashScreensState extends State<SplashScreens> {
       title: 'Elevate Your\nTeaching Impact',
       subtitle:
           'Access peer-reviewed materials, give and receive feedback, and continuously improve your educational content',
-      backgroundImage: 'assets/images/3.jpg',
+      backgroundImage: '',
       icon: '📈',
       emoji: '🎓',
       features: [
